@@ -10,6 +10,13 @@ import random
 
 
 ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--pose", type=str,
+                choices=[
+                    'yolov8n-pose', 'yolov8s-pose', 'yolov8m-pose', 
+                    'yolov8l-pose', 'yolov8x-pose', 'yolov8x-pose-p6'
+                ],
+                default='yolov8n-pose',
+                help="choose type of yolov8 pose model")
 ap.add_argument("-m", "--model", type=str, required=True,
                 help="path to saved keras model")
 ap.add_argument("-c", "--conf", type=float, default=0.25,
@@ -29,7 +36,7 @@ col_names = [
 ]
 
 # YOLOv8 Pose Model
-model = YOLO('yolov8n-pose.pt')
+model = YOLO(f"{args['pose']}.pt")
 
 def get_inference(img):
     results = model.predict(img)
@@ -133,7 +140,7 @@ else:
         fps = 1/(c_time-p_time)
         print('FPS: ', fps)
         p_time = c_time
-        
+
         # Write Video
         if args['save'] or args['hide'] is False:
             out_vid.write(img)
