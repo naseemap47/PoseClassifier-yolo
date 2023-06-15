@@ -1,27 +1,26 @@
-import keras
-import pandas as pd
 from keras import layers, Sequential
-import argparse
 from sklearn.model_selection import train_test_split
 from matplotlib import pyplot as plt
+import keras
+from utils import save_model_ext
+import pandas as pd
 import os
+import json
+import argparse
 
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-i", "--dataset", type=str, required=True,
+ap.add_argument("-i", "--data", type=str, required=True,
                 help="path to csv Data")
-
 ap.add_argument("-o", "--save", type=str, required=True,
                 help="path to save .h5 model, eg: dir/model.h5")
-
 args = vars(ap.parse_args())
-path_csv = args["dataset"]
-path_to_save = args["save"]
 
 # Load .csv Data
-df = pd.read_csv(path_csv)
+df = pd.read_csv(args["data"])
 class_list = df['Pose_Class'].unique()
 class_list = sorted(class_list)
+labels_string = json.dumps(class_list)
 class_number = len(class_list)
 
 # Create training and validation splits
@@ -37,6 +36,7 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 
 print('[INFO] Loaded csv Dataset')
 
+# Keras Model Arc
 model = Sequential([
     layers.Dense(512, activation='relu', input_shape=[x_train.shape[1]]),
     layers.Dense(256, activation='relu'),
@@ -46,6 +46,7 @@ model = Sequential([
 # Model Summary
 print('Model Summary: ', model.summary())
 
+# model compile
 model.compile(
     optimizer='adam',
     loss='categorical_crossentropy',
@@ -54,8 +55,7 @@ model.compile(
 
 # Add a checkpoint callback to store the checkpoint that has the highest
 # validation accuracy.
-checkpoint_path = path_to_save
-checkpoint = keras.callbacks.ModelCheckpoint(checkpoint_path,
+checkpoint = keras.callbacks.ModelCheckpoint(args["save"],
                                              monitor='val_accuracy',
                                              verbose=1,
                                              save_best_only=True,
@@ -63,8 +63,8 @@ checkpoint = keras.callbacks.ModelCheckpoint(checkpoint_path,
 earlystopping = keras.callbacks.EarlyStopping(monitor='val_accuracy',
                                               patience=20)
 
-print('[INFO] Model Training Started ...')
 # Start training
+print('[INFO] Model Training Started ...')
 history = model.fit(x_train, y_train,
                     epochs=200,
                     batch_size=16,
@@ -72,7 +72,8 @@ history = model.fit(x_train, y_train,
                     callbacks=[checkpoint, earlystopping])
 
 print('[INFO] Model Training Completed')
-print(f'[INFO] Model Successfully Saved in /{path_to_save}')
+save_model_ext(model, args["save"], meta_data=labels_string)
+print(f'[INFO] Model Successfully Saved in /{args["save"]}')
 
 # Plot History
 metric_loss = history.history['loss']
