@@ -1,5 +1,8 @@
-import cv2
+from keras.models import load_model
+from keras.models import save_model
 import numpy as np
+import h5py
+import cv2
 import math
 import random
 
@@ -86,3 +89,22 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
         c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
         cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
         cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+
+
+# Save and Load Keras Model with meta data
+def load_model_ext(filepath):
+    model = load_model(filepath, custom_objects=None)
+    f = h5py.File(filepath, mode='r')
+    meta_data = None
+    if 'my_meta_data' in f.attrs:
+        meta_data = f.attrs.get('my_meta_data')
+    f.close()
+    return model, meta_data
+   
+
+def save_model_ext(model, filepath, overwrite=True, meta_data=None):
+    save_model(model, filepath, overwrite)
+    if meta_data is not None:
+        f = h5py.File(filepath, mode='a')
+        f.attrs['my_meta_data'] = meta_data
+        f.close()
