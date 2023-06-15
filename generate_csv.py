@@ -42,7 +42,7 @@ for class_name in class_names:
             for result in results:
                 poses = result.keypoints
                 for pose in poses:
-                    for id, pnt in enumerate(pose):
+                    for pnt in pose:
                         x, y = pnt[:2]
                         lm_list.append([int(x), int(y)])
         
