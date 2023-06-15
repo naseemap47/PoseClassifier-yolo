@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
+import math
 
 
-
+# Plot Skeleton Keypoints
 def plot_skeleton_kpts(im, kpts, radius=5, shape=(640, 640), confi=0.5, line_thick=2):
     pose_palette = np.array([[255, 128, 0], [255, 153, 51], [255, 178, 102], [230, 230, 0], [255, 153, 255],
                             [153, 204, 255], [255, 102, 255], [255, 51, 255], [102, 178, 255], [51, 153, 255],
@@ -40,3 +41,34 @@ def plot_skeleton_kpts(im, kpts, radius=5, shape=(640, 640), confi=0.5, line_thi
         if pos2[0] % shape[1] == 0 or pos2[1] % shape[0] == 0 or pos2[0] < 0 or pos2[1] < 0:
             continue
         cv2.line(im, pos1, pos2, [int(x) for x in limb_color[i]], thickness=line_thick, lineType=cv2.LINE_AA)
+
+
+# Normalize Keypoints
+def norm_kpts(lm_list, torso_size_multiplier=2.5):
+    max_distance = 0
+    center_x = (lm_list[12][0] +       # right_hip
+                lm_list[11][0])*0.5    # left_hip
+    center_y = (lm_list[12][1] +       # right_hip
+                lm_list[11][1])*0.5    # left_hip
+
+    shoulders_x = (lm_list[6][0] +       # right_shoulder
+                    lm_list[5][0])*0.5   # left_shoulder
+    shoulders_y = (lm_list[6][1] +       # right_shoulder
+                    lm_list[5][1])*0.5   # left_shoulder
+    
+    for lm in lm_list:
+        distance = math.sqrt(
+            (lm[0] - center_x)**2 + (lm[1] - center_y)**2)
+        if(distance > max_distance):
+            max_distance = distance
+    torso_size = math.sqrt(
+        (shoulders_x - center_x)**2 + (shoulders_y - center_y)**2)
+    max_distance = max(
+        torso_size*torso_size_multiplier, max_distance)
+
+    pre_lm = list(np.array(
+        [[(landmark[0]-center_x)/max_distance, (landmark[1]-center_y)/max_distance] for landmark in lm_list]
+    ).flatten())
+    
+    return pre_lm
+
