@@ -93,7 +93,7 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
 
 # Save and Load Keras Model with meta data
 def load_model_ext(filepath):
-    model = load_model(filepath, custom_objects=None)
+    model = load_model(filepath, custom_objects=None, compile=False)
     f = h5py.File(filepath, mode='r')
     meta_data = None
     if 'my_meta_data' in f.attrs:
