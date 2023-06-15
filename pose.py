@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 import cv2
 import numpy as np
-from utils import plot_skeleton_kpts
+from utils import plot_skeleton_kpts, plot_one_box
 
 
 
@@ -9,7 +9,7 @@ from utils import plot_skeleton_kpts
 
 model = YOLO('yolov8n-pose.pt')
 cap = cv2.VideoCapture(2)
-poses = None
+
 
 while True:
     success, img = cap.read()
@@ -19,12 +19,20 @@ while True:
 
     results = model.predict(img)
     for result in results:
-        # print(result.keypoints)
-        poses = result.keypoints
-
-    # if poses is not None:
-        for pose in poses:
+        for box, pose in zip(result.boxes, result.keypoints):
+            plot_one_box(box.xyxy[0], img, (255, 0, 255), f'person {box.conf[0]:.3}')
             plot_skeleton_kpts(img, pose, radius=5, line_thick=2, confi=0.5)
+        #     # print(len(pose))
+        #     for id, pnt in enumerate(pose):
+        #         x, y = pnt[:2]
+        #         x, y = int(x), int(y)
+        #         cv2.circle(
+        #             img, (x, y), 5, (0, 255, 0), 3, cv2.FILLED
+        #         )
+        #         cv2.putText(
+        #             img, f'{id}', (x, y), cv2.FONT_HERSHEY_PLAIN,
+        #             3, (0, 255, 255), 3
+        #         )
 
     # img = cv2.resize(img, (1080, 720))
     cv2.imshow('img', img)
