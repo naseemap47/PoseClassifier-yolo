@@ -8,6 +8,13 @@ import argparse
 
 
 ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--pose", type=str,
+                choices=[
+                    'yolov8n-pose', 'yolov8s-pose', 'yolov8m-pose', 
+                    'yolov8l-pose', 'yolov8x-pose', 'yolov8x-pose-p6'
+                ],
+                default='yolov8n-pose',
+                help="choose type of yolov8 pose model")
 ap.add_argument("-i", "--data", type=str, required=True,
                 help="path to data/dir")
 ap.add_argument("-o", "--save", type=str, required=True,
@@ -21,7 +28,7 @@ col_names = [
 ]
 
 # YOLOv8 Pose Model
-model = YOLO('yolov8n-pose.pt')
+model = YOLO(f"{args['pose']}.pt")
 
 full_lm_list = []
 target_list = []

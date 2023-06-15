@@ -12,8 +12,6 @@ import argparse
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--data", type=str, required=True,
                 help="path to csv Data")
-ap.add_argument("-o", "--save", type=str, required=True,
-                help="path to save .h5 model, eg: dir/model.h5")
 args = vars(ap.parse_args())
 
 # Load .csv Data
@@ -53,9 +51,23 @@ model.compile(
     metrics=['accuracy']
 )
 
+
+# Save Model Dir
+os.makedirs('runs', exist_ok=True)
+c = 0
+while True:
+    path_save = os.path.join('runs', f'train{c}')
+    if not os.path.exists(path_save):
+        os.makedirs(path_save, exist_ok=True)
+        break
+    else:
+        c += 1
+        continue
+
 # Add a checkpoint callback to store the checkpoint that has the highest
 # validation accuracy.
-checkpoint = keras.callbacks.ModelCheckpoint(args["save"],
+ckpt_path = os.path.join(path_save, "weight-{epoch:02d}-{val_accuracy:.2f}.h5")
+checkpoint = keras.callbacks.ModelCheckpoint(ckpt_path,
                                              monitor='val_accuracy',
                                              verbose=1,
                                              save_best_only=True,
@@ -72,8 +84,8 @@ history = model.fit(x_train, y_train,
                     callbacks=[checkpoint, earlystopping])
 
 print('[INFO] Model Training Completed')
-save_model_ext(model, args["save"], meta_data=labels_string)
-print(f'[INFO] Model Successfully Saved in /{args["save"]}')
+save_model_ext(model, os.path.join(path_save, 'model.h5'), meta_data=labels_string)
+print(f'[INFO] Model Successfully Saved \033[1m model.h5 \033[0;0m in {path_save}')
 
 # Plot History
 metric_loss = history.history['loss']
@@ -97,10 +109,5 @@ plt.title(str('Model Metrics'))
 plt.legend(['loss', 'val_loss', 'accuracy', 'val_accuracy'])
 
 # If the plot already exist, remove
-plot_png = os.path.exists('metrics.png')
-if plot_png:
-    os.remove('metrics.png')
-    plt.savefig('metrics.png', bbox_inches='tight')
-else:
-    plt.savefig('metrics.png', bbox_inches='tight')
-print('[INFO] Successfully Saved metrics.png')
+plt.savefig(os.path.join(path_save, 'metrics.png'), bbox_inches='tight')
+print(f'[INFO] Successfully Saved \033[1m metrics.png \033[0;0m in {path_save}')

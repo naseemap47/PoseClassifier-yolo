@@ -1,0 +1,4 @@
+tensorflow==2.12.0
+ultralytics==8.0.81
+pandas
+scikit-learn
