@@ -86,7 +86,7 @@ epochs = range(len(metric_loss))
 # Plot the Graph.
 plt.plot(epochs, metric_loss, 'blue', label=metric_loss)
 plt.plot(epochs, metric_val_loss, 'red', label=metric_val_loss)
-plt.plot(epochs, metric_accuracy, 'blue', label=metric_accuracy)
+plt.plot(epochs, metric_accuracy, 'magenta', label=metric_accuracy)
 plt.plot(epochs, metric_val_accuracy, 'green', label=metric_val_accuracy)
 
 # Add title to the plot.
