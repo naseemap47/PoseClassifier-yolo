@@ -16,6 +16,8 @@ ap.add_argument("-c", "--conf", type=float, default=0.25,
                 help="path to saved keras model")
 ap.add_argument("-s", "--source", type=str, required=True,
                 help="path to video/cam/RTSP")
+ap.add_argument("--save", action='store_true',
+                help="Save video")
 args = vars(ap.parse_args())
 
 col_names = [
@@ -36,6 +38,23 @@ if args['source'].isnumeric():
     cap = cv2.VideoCapture(int(args['source']))
 else:
     cap = cv2.VideoCapture(args['source'])
+
+# Write Video
+if args['save']:
+    # Get the width and height of the video.
+    original_video_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    original_video_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    
+    # path to save videos
+    os.makedirs(os.path.join('runs', 'detect'), exist_ok=True)
+    if not args['save'].isnumeric():
+        video_name = os.path.split(args['save'])[1]
+    else:
+        video_name = f"cam{args['save']}"
+    out_vid = cv2.VideoWriter(os.path.join('runs', 'detect', video_name), 
+                         cv2.VideoWriter_fourcc(*'mp4v'),
+                         fps, (original_video_width, original_video_height))
 
 p_time = 0
 while True:
@@ -68,15 +87,21 @@ while True:
                 plot_one_box(box.xyxy[0], img, (255, 0, 255), f'{pose_class} {max(predict)}')
                 plot_skeleton_kpts(img, pose, radius=5, line_thick=2, confi=0.5)
 
+    # Write Video
+    if args['save']:
+        out_vid.write(img)
+    
     # FPS
     c_time = time.time()
     fps = 1/(c_time-p_time)
     print('FPS: ', fps)
     p_time = c_time
 
-    cv2.imshow('Output Image', img)
+    cv2.imshow('Output', img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cap.release()
+if args['save']:
+    out_vid.release()
 cv2.destroyAllWindows()
