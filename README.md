@@ -1,9 +1,9 @@
 # PoseClassifier-yolo
 Classify human poses with help of yolo pose model.
 
-#### Sample Output
+### 🖼️ Sample Output
 
-https://github.com/naseemap47/PoseClassifier-yolo/assets/88816150/f8d97b67-c055-4bdf-81db-1e4f830aadbe
+![output](https://github.com/naseemap47/PoseClassifier-yolo/assets/88816150/212c63dd-c4f8-4b22-9fd6-94e1f1d1dbfe)
 
 ## Let's Get Started...
 Using this Custom Pose Classification, I am going to Create a Yoga Pose Classification. Using Yoga Poses Dataset.
@@ -25,7 +25,7 @@ pip3 install -r requirements.txt
 ```
 pip3 install -r requirements.txt
 ```
-### Prepare Dataset
+### 🎒 Prepare Dataset
 **Dataset Structure:**
 ```
 ├── Dataset
@@ -40,7 +40,9 @@ pip3 install -r requirements.txt
 .   .
 .   .
 ```
-### Create Landmark Dataset for each Classes
+
+## 🤖 Train
+### 🗃️ Create Landmark Dataset for each Classes
 Convert pose images into pose lankmark and save to an **CSV** file.
 So that we can train with that.
 
@@ -60,8 +62,7 @@ So that we can train with that.
 python3 generate_csv.py --pose yolov8n-pose --data dataset/train_data --save data.csv
 ```
 
-## 🤖 Train
-### Create DeepLearinng Model to predict Human Pose
+### 🚆 Create DeepLearinng Model to predict Human Pose
 Create a keras model to predict human poses.
 
 <details>
