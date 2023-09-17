@@ -21,7 +21,6 @@ def plot_skeleton_kpts(im, kpts, radius=5, shape=(640, 640), confi=0.5, line_thi
     kpt_color = pose_palette[[16, 16, 16, 16, 16, 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 9, 9]]
 
     ndim = kpts.shape[-1]
-    kpts = kpts.data[0]
     for i, k in enumerate(kpts):
         color_k = [int(x) for x in kpt_color[i]]
         x_coord, y_coord = k[0], k[1]
