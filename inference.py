@@ -41,7 +41,7 @@ model = YOLO(f"{args['pose']}.pt")
 def get_inference(img):
     results = model.predict(img)
     for result in results:
-        for box, pose in zip(result.boxes, result.keypoints):
+        for box, pose in zip(result.boxes, result.keypoints.data):
             lm_list = []
             for pnt in pose:
                 x, y = pnt[:2]
