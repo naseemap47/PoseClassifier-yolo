@@ -11,4 +11,4 @@ RUN apt-get update && \
 RUN apt-get autoremove -y
 RUN apt-get clean
 WORKDIR /home
-RUN pip install -r requirements.txt
+RUN pip install tensorflow==2.12.0 ultralytics>=8.0.81 pandas scikit-learn
