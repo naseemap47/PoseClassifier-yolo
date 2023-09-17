@@ -20,7 +20,8 @@ def plot_skeleton_kpts(im, kpts, radius=5, shape=(640, 640), confi=0.5, line_thi
     limb_color = pose_palette[[9, 9, 9, 9, 7, 7, 7, 0, 0, 0, 0, 0, 16, 16, 16, 16, 16, 16, 16]]
     kpt_color = pose_palette[[16, 16, 16, 16, 16, 0, 0, 0, 0, 0, 0, 9, 9, 9, 9, 9, 9]]
 
-    _, ndim = kpts.shape
+    ndim = kpts.shape[-1]
+    kpts = kpts.data[0]
     for i, k in enumerate(kpts):
         color_k = [int(x) for x in kpt_color[i]]
         x_coord, y_coord = k[0], k[1]
@@ -31,7 +32,6 @@ def plot_skeleton_kpts(im, kpts, radius=5, shape=(640, 640), confi=0.5, line_thi
                     continue
             cv2.circle(im, (int(x_coord), int(y_coord)), radius, color_k, -1, lineType=cv2.LINE_AA)
 
-    ndim = kpts.shape[-1]
     for i, sk in enumerate(skeleton):
         pos1 = (int(kpts[(sk[0] - 1), 0]), int(kpts[(sk[0] - 1), 1]))
         pos2 = (int(kpts[(sk[1] - 1), 0]), int(kpts[(sk[1] - 1), 1]))
